@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- version1.0-->
+<html lang="en">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="content-script-type" content="text/javascript">
+	  	<meta http-equiv="content-style-type" content="text/css">
+	  	<title>北京天地智绘</title>
+	  	<link href="./js/common.css" rel="stylesheet" type="text/css" media="all">
+	  	<script src="./js/jquery-1.8.3.min.js"></script>
+	  	<script src="./js/babyzone.js"></script>
+
+	  	<style type="text/css">
+			#banner {position:relative;border:1px solid #666; overflow:hidden;}
+			#banner_list img {border:0px;}
+			#banner_info{position:absolute; bottom:18px; left:5px; line-height:30px;color:#0000CD;z-index:1001}
+			#banner ul {position:absolute;list-style-type:none;filter: Alpha(Opacity=75);opacity:0.75; border:1px solid #fff;z-index:1002;margin:0; padding:0; bottom:3px; right:5px;}
+			#banner ul li { padding:0px 8px;float:left;display:block;color:#FFF;border:#fff 1px solid;background-color:#6f4f67;cursor:pointer}
+            #banner_list a{position:absolute;top:0;left: 0}<!-- 让图片都可以重叠在一起-->
+		</style>
+	</head>
+<body>
+<!-- 头部区域 -->
+<div id="headerWrapper" >
+    <div id="maintitle" ><a href="http://www.myenvi.cn" style="color: #FAFAFA;" >北京天地智绘科技有限公司</a></div>
+    <div id = "subtitle">
+        <a href="http://www.myenvi.cn" style="color: #E6E6FA;font-size: 20px;font-style: oblique;">www.myenvi.cn</a>
+    </div>
+    <div id="curTime" ></div>
+</div>
+
+<!-- 分割线 -->
+<div style="width: 100%;height: 5px;background-color: #FFCC00;"></div>
+
+<!-- 图像区域 -->
+<div id="imgArea">
+	<!-- **************** 图片显示区域**************** -->
+		<div id="banner">
+			<a href="#" id="banner_info"></a>
+			<!--序号-->
+			<ul id="list"></ul>
+			<div id="banner_list" style="width: 100%;height: 600px;">
+                <!-- 程序自动添加标签 -->
+			</div>
+		</div>
+	
+</div>
+
+
+<div style="width: 100%;height: 4px;background-color: #FF7E00;"></div>
+<div id="footerWrap" style="height: 60px;width: 100%;">
+	<div id="company" style="color: #FFFFFF; margin-top: 15px;margin-left: 10%;">
+		<p style="color: #FFFFFF;margin-right: 15px;">公司名称：北京天地智绘科技有限公司
+		<p style="color: #FFFFFF;margin-right: 15px;">联系方式：TEL:18518673499;QQ:372828298<span id="counter" style="margin-left: 63%;margin-right: 10%"></span></p>
+		<p style="color: #FFFFFF;">版权所有：北京天地智绘科技有限公司</p>
+	</div>
+    <ul id="mailto" style="width: 100%;margin-bottom: 15px;">
+    	<li>
+    		<address style="align-content: center;margin-left: 43%">
+  				  <span class="copy"style="color: #FFFFFF;">Copyright© <a href="http://www.myenvi.cn/" target="_blank" style="color: #FFFFFF;font-family:'agency fb';font-style: oblique;">北京天地智绘科技有限公司</a></span>
+ 			 </address>
+ 			 <a id="contact" href="#" style="font-family:'agency fb';font-style: oblique;color: #FFFFFF;">与我们联系</a>
+    	</li>
+      
+    </ul>
+ </div>
+
+  <script src="./js/jquery-2.1.4.min.js" type="text/javascript"></script>
+  <script src="./js/jquery-ui.min.js" type="text/javascript"></script>
+  <script src="./js/common.js" type="text/javascript"></script>
+
+<!--计算日期-->
+<script type="text/javascript">
+	var today = new Date();
+	var day = today.getDay();
+	if (day == 0) var xingqi = "星期日";
+	if (day == 1) var xingqi = "星期一";
+	if (day == 2) var xingqi = "星期二";
+	if (day == 3) var xingqi = "星期三";
+	if (day == 4) var xingqi = "星期四";
+	if (day == 5) var xingqi = "星期五";
+	if (day == 6) var xingqi = "星期六";
+	var dateString = today.toLocaleDateString(); //这个是显示的效果比较好
+	var dateAndTime = today.toLocaleString();
+	var time = today.toLocaleTimeString();
+	var hour = today.getHours();
+	var minute = today.getMinutes();
+	var t = dateString + " "+xingqi;
+	document.getElementById('curTime').innerHTML = t;
+</script>
+<!--查询图片路径-->
+<script>
+	$(document).ready(function(){
+		var i;
+		$.getJSON("getImagePath.php",function(data,status){
+			if(!status)
+				alert("failed");
+			for (i = 0;i<data.length;i++){
+				var na = document.createElement("a");
+                na.width = document.getElementById("banner_list").getAttribute("width");
+                na.height = document.getElementById("banner_list").getAttribute("height");
+                $("na").css({
+                    "width" : $("#banner_list").width,
+                    "height" :$("#banner_list").height
+                });
+				na.href = "#";
+                na.target = "_blank";
+				var img = document.createElement("img");
+				img.src = data[i];
+                img.class = "myimg";
+				img.title = data[i].substring(data[i].lastIndexOf('/')+1,data[i].length);
+				img.alt = data[i].substring(data[i].lastIndexOf('/')+1,data[i].length);
+                img.onload = function(){
+                    AutoResizeImage(0,600,this);
+                };
+                $(".myimg").css({
+                    "width" : "100%",
+                    "height" : "100%",
+                    "margin":"0 auto",
+                    "display":"block"
+                });
+				na.appendChild(img);
+				document.getElementById("banner_list").appendChild(na);
+			}
+			babyzone.scroll(data.length,"banner_list","list","banner_info");
+		});
+        $.get("Visitors.php",function(data,stat){
+			if(!stat)
+					alert("failed");
+            $("#counter").html(data);
+        });
+	});
+</script>
+<!--调整图片大小-->
+<script type="text/javascript">
+    function AutoResizeImage(maxWidth, maxHeight, objImg) {
+        var img = new Image();
+        img.src = objImg.src;
+        var hRatio;
+        var wRatio;
+        var Ratio = 1;
+        var w = img.width;
+        var h = img.height;
+        wRatio = maxWidth / w;
+        hRatio = maxHeight / h;
+        if (maxWidth == 0 && maxHeight == 0) {
+            Ratio = 1;
+        } else if (maxWidth == 0) { //
+            if (hRatio < 1) Ratio = hRatio;
+        } else if (maxHeight == 0) {
+            if (wRatio < 1) Ratio = wRatio;
+        } else if (wRatio < 1 || hRatio < 1) {
+            Ratio = (wRatio <= hRatio ? wRatio : hRatio);
+        }
+        if (Ratio < 1) {
+            w = w * Ratio;
+            h = h * Ratio;
+        }
+        objImg.height = h;
+        objImg.width = w;
+    }
+</script>
+</body>
+</html>
